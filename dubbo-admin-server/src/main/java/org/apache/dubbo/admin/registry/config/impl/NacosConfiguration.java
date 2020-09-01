@@ -178,7 +178,8 @@ public class NacosConfiguration implements GovernanceConfiguration {
             groupAndDataId[1] = split[2];
         } else {
             groupAndDataId[0] = group;
-            groupAndDataId[1] = split[1] + Constants.PUNCTUATION_POINT + split[2];
+            //groupAndDataId[1] = split[1] + Constants.PUNCTUATION_POINT + split[2];
+            groupAndDataId[1] = split[2];
         }
         return groupAndDataId;
     }
