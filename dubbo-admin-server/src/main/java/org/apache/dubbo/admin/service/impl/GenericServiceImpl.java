@@ -38,8 +38,11 @@ public class GenericServiceImpl {
 
     @PostConstruct
     public void init() {
+        System.out.println("GenericServiceImpl init:" + registry.getUrl());
         RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setAddress(registry.getUrl().getProtocol() + "://" + registry.getUrl().getAddress());
+        String namespace = registry.getUrl().getParameter("namespace");
+        registryConfig.setAddress(registry.getUrl().getProtocol() + "://" + registry.getUrl().getAddress() + (namespace!=null?"?namespace=" + namespace:""));
+        registryConfig.setGroup(registry.getUrl().getParameter("group"));
         registryConfig.setGroup(registry.getUrl().getParameter("group"));
 
         applicationConfig = new ApplicationConfig();
@@ -48,6 +51,7 @@ public class GenericServiceImpl {
     }
 
     public Object invoke(String service, String method, String[] parameterTypes, Object[] params) {
+        System.out.println("GenericServiceImpl invoke:" + registry.getUrl());
 
         ReferenceConfig<GenericService> reference = new ReferenceConfig<>();
         String group = Tool.getGroup(service);
@@ -58,6 +62,7 @@ public class GenericServiceImpl {
         reference.setInterface(intf);
         reference.setVersion(version);
         reference.setGroup(group);
+
 
         try {
             removeGenericSymbol(parameterTypes);

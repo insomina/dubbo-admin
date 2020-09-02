@@ -32,10 +32,13 @@ import com.alibaba.nacos.api.exception.NacosException;
 import java.util.Properties;
 
 import static com.alibaba.nacos.api.PropertyKeyConst.SERVER_ADDR;
+import static com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
+
 
 public class NacosMetaDataCollector implements MetaDataCollector {
     private static final Logger logger = LoggerFactory.getLogger(NacosMetaDataCollector.class);
     private ConfigService configService;
+    private String nameSpace;
     private String group;
     private URL url;
     @Override
@@ -51,6 +54,9 @@ public class NacosMetaDataCollector implements MetaDataCollector {
     @Override
     public void init() {
         group = url.getParameter(Constants.GROUP_KEY, "DEFAULT_GROUP");
+
+        nameSpace = url.getParameter(Constants.NAMESPACE_KEY, "public");
+        System.out.println("NacosMetaDataCollector init:" + url + "," + group + "," + nameSpace);
 
         configService = buildConfigService(url);
     }
@@ -81,6 +87,7 @@ public class NacosMetaDataCollector implements MetaDataCollector {
                 url.getPort() // Port
                 ;
         properties.put(SERVER_ADDR, serverAddr);
+        properties.put(NAMESPACE, nameSpace);
     }
 
     @Override
@@ -95,6 +102,7 @@ public class NacosMetaDataCollector implements MetaDataCollector {
 
     private String getMetaData(MetadataIdentifier identifier) {
         try {
+            System.out.println("getMetaData:" + identifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY) + "," + group);
             return configService.getConfig(identifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY),
                     group, 1000 * 10);
         } catch (NacosException e) {

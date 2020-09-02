@@ -31,17 +31,23 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Properties;
 
 import static com.alibaba.nacos.api.PropertyKeyConst.SERVER_ADDR;
+import static com.alibaba.nacos.api.PropertyKeyConst.NAMESPACE;
 
 public class NacosConfiguration implements GovernanceConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(NacosConfiguration.class);
 
     private ConfigService configService;
+    private String nameSpace;
     private String group;
     private URL url;
 
     @Override
     public void init() {
+        System.out.println("init:" + url + "," + group + "," + nameSpace);
         group = url.getParameter(Constants.GROUP_KEY, "DEFAULT_GROUP");
+	
+	    nameSpace = url.getParameter(Constants.NAMESPACE_KEY, "public");
+        System.out.println("init:" + url + "," + group + "," + nameSpace);
 
         configService = buildConfigService(url);
     }
@@ -72,6 +78,7 @@ public class NacosConfiguration implements GovernanceConfiguration {
                 url.getPort() // Port
                 ;
         properties.put(SERVER_ADDR, serverAddr);
+	    properties.put(NAMESPACE, nameSpace);
     }
 
 
@@ -124,6 +131,7 @@ public class NacosConfiguration implements GovernanceConfiguration {
             return null;
         }
         try {
+            System.out.println("getConfig" + groupAndDataId[1] + "," + groupAndDataId[0]);
             return configService.getConfig(groupAndDataId[1], groupAndDataId[0],1000 * 10);
         } catch (NacosException e) {
             logger.error(e.getMessage(), e);
